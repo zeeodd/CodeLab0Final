@@ -7,6 +7,7 @@ public class InfiniteRotate : MonoBehaviour
     public bool shouldBeSpinning; // Easy toggle so it can stop spinning
     public float rotateSpeed = 1f; // How fast game obj should spin
 
+    // Bools to control or freeze certain axes of spin
     public bool spinX;
     public bool spinY;
     public bool spinZ;
@@ -18,7 +19,7 @@ public class InfiniteRotate : MonoBehaviour
 
     void Update()
     {
-        // Only spin if the bool flag is up
+        // Only spin if the bool flag is up, and if so, set that value
         if (shouldBeSpinning)
         {
             var xRotate = (spinX) ? rotateSpeed : 0f;
