@@ -6,20 +6,24 @@ using UnityEngine.UI;
 public class CanvasController : MonoBehaviour
 {
     // Input boxes and order labels for each player, also the start button
-    GameObject P1Input;
-    GameObject P2Input;
-    GameObject P3Input;
-    GameObject P4Input;
-    GameObject orderBtn;
-    GameObject P1Order;
-    GameObject P2Order;
-    GameObject P3Order;
-    GameObject P4Order;
-    GameObject startBtn;
+    public GameObject opacityBackground;
+    public GameObject P1Input;
+    public GameObject P2Input;
+    public GameObject P3Input;
+    public GameObject P4Input;
+    public GameObject orderBtn;
+    public GameObject P1Order;
+    public GameObject P2Order;
+    public GameObject P3Order;
+    public GameObject P4Order;
+    public GameObject startBtn;
 
     // Used for triggering the actual ordering of players after a short anim
     public bool readyForOrdering = false;
 
+    // Bool for creating players
+    public bool savePlayers = false;
+    public bool clearUI = false;
 
     // Anim vars
     private float scrambleTimer = 3f;
@@ -33,6 +37,7 @@ public class CanvasController : MonoBehaviour
     void Start()
     {
         // Hook up all of the important player variables
+        opacityBackground = transform.GetChild(0).gameObject;
         P1Input = transform.GetChild(1).transform.GetChild(1).gameObject;
         P2Input = transform.GetChild(2).transform.GetChild(1).gameObject;
         P3Input = transform.GetChild(3).transform.GetChild(1).gameObject;
@@ -54,6 +59,7 @@ public class CanvasController : MonoBehaviour
         orderValues.Add("2");
         orderValues.Add("3");
         orderValues.Add("4");
+
     }
 
     void Update()
@@ -111,6 +117,23 @@ public class CanvasController : MonoBehaviour
                 SetOrder();
             }
         }
+
+        if (clearUI)
+        {
+            // Disable both buttons
+            startBtn.SetActive(false);
+            orderBtn.SetActive(false);
+
+            // Disable the ordering labels
+            P1Order.SetActive(false);
+            P2Order.SetActive(false);
+            P3Order.SetActive(false);
+            P4Order.SetActive(false);
+
+            // Disable the opacity background
+            opacityBackground.SetActive(false);
+
+        }
     }
 
     // Function to be called once the players hit start (and after they have
@@ -151,4 +174,11 @@ public class CanvasController : MonoBehaviour
             list[r] = tmp;
         }
     }
+
+    public void StartGame()
+    {
+        savePlayers = true;
+        clearUI = true;
+    }
+
 }
