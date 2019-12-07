@@ -5,5 +5,9 @@ using UnityEngine;
 public class BobaController : MonoBehaviour
 {
     public int order;
-    public bool popOut;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        gameObject.SetActive(false);
+    }
 }
