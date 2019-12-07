@@ -5,10 +5,15 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public GameObject canvas; // Grab the canvas object
+    public bool setUpGame = false;
 
     void ActivateCanvas() // Animation event to trigger once the camera pan is done
     {
         canvas.SetActive(true);
-        print("Canvas is now active!");
+    }
+
+    void LoadBobaArray() // Animation event to trigger once the camera pan is done
+    {
+        setUpGame = true;
     }
 }

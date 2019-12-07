@@ -9,7 +9,19 @@ public class GameManager : MonoBehaviour
     // Controller objects we need to keep track of
     public CanvasController canvasController;
     public CameraController cameraController;
+    public ArrayController arrayController;
 
+    // Gameobjects we need to keep track of
+    public GameObject cup;
+    public GameObject tinyStar;
+    public GameObject bigStar;
+
+    private Vector3 uprightCupRot = new Vector3(0f, 0f, 8.4f);
+
+    // Animator for the camera
+    Animator cameraAnimator;
+
+    // List of all players
     List<Player> playerList = new List<Player>();
 
     // This is a Player class for easy storage of important information
@@ -106,8 +118,27 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            // Stop other animations
+            tinyStar.GetComponent<InfiniteRotate>().shouldBeSpinning = false;
+            bigStar.GetComponent<InfiniteRotate>().shouldBeSpinning = false;
+            tinyStar.gameObject.SetActive(false);
+            bigStar.gameObject.SetActive(false);
+            cup.GetComponent<InfiniteRotate>().shouldBeSpinning = false;
+            cup.transform.eulerAngles = uprightCupRot;
+
+
+            // Move the camera to a new pos
+            cameraAnimator = cameraController.gameObject.GetComponent<Animator>();
+            cameraAnimator.SetBool("ReposCamera", true);
+
             // Set this bool false so it runs only once
             canvasController.savePlayers = false;
+        }
+
+        if (cameraController.setUpGame)
+        {
+            arrayController.loadArray = true;
+            cameraController.setUpGame = false;
         }
     }
 
