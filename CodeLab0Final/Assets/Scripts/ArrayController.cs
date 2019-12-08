@@ -8,9 +8,12 @@ public class ArrayController : MonoBehaviour
     public bool loadArray = false;
     public bool poppedOut = false;
     public bool arrayUpdated = true;
+    public bool bobasMoved = true;
 
     // Gameobj for the boba's spawnpoint
     public GameObject bobaSpawnPoint;
+    public GameObject strawBottom;
+    public GameObject strawTop;
 
     // Boba Controller script
     BobaController bobaController;
@@ -51,7 +54,7 @@ public class ArrayController : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Alpha1))
         {
             // Only call this function if no boba are currently popped out and the array is updated
-            if(!poppedOut && arrayUpdated)
+            if(!poppedOut && arrayUpdated && bobasMoved)
             {
                 // Find the first boba and push it out
                 foreach (GameObject boba in bobaList)
@@ -62,7 +65,9 @@ public class ArrayController : MonoBehaviour
                         boba.GetComponent<Rigidbody>().AddForce(0, thrust, 0, ForceMode.Impulse);
                         poppedOut = true;
                         lastBoba = boba;
+                        strawTop.GetComponent<StrawTopBuffer>().bobaAtTop = false;
                         arrayUpdated = false;
+                        bobasMoved = false;
                     }
                 }
             }
@@ -70,8 +75,13 @@ public class ArrayController : MonoBehaviour
 
         // TODO: Add input control for hitting two bobas
 
+        if (!bobasMoved)
+        {
+            MoveStrawBottom();
+        }
+
         // Invoke this method if a boba is popped so players can see the animation
-        if(poppedOut)
+        if (poppedOut)
         {
             Invoke("UpdateArray", 1f);
             poppedOut = false;
@@ -91,9 +101,15 @@ public class ArrayController : MonoBehaviour
             boba.GetComponent<BobaController>().order -= 1;
         }
 
-        // TODO: Move the array of bobas upward after each boba is tossed out
-
         // Set back to true so players can input functions again
         arrayUpdated = true;
+    }
+
+    void MoveStrawBottom()
+    {
+        while (!strawTop.GetComponent<StrawTopBuffer>().bobaAtTop)
+        {
+            strawBottom.transform.Translate(Vector3.up * Time.deltaTime, Space.World);
+        }
     }
 }

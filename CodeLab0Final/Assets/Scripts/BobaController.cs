@@ -8,6 +8,9 @@ public class BobaController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        gameObject.SetActive(false);
+        if (other.CompareTag("Ceiling"))
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
