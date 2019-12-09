@@ -9,33 +9,55 @@ public class ArrayController : MonoBehaviour
     public bool poppedOut = false;
     public bool arrayUpdated = true;
     public bool bobasMoved = true;
+    public bool firstPush = false;
+    public bool incrementTurn = false;
+    private float timeElapsed = 0f;
 
     // Gameobj for the boba's spawnpoint
     public GameObject bobaSpawnPoint;
     public GameObject strawBottom;
     public GameObject strawTop;
 
-    // Boba Controller script
-    BobaController bobaController;
-
     // Number of bobas to initialize 
     public int bobaCount;
     public float thrust;
+    public int badBoba1;
+    public int badBoba2;
+    public int badBoba3;
+    public int upperRandom;
+    public int lowerRandom;
 
     // List of all bobas
     List<GameObject> bobaList = new List<GameObject>();
     private GameObject lastBoba;
+    private GameObject secondToLastBoba;
+    private int bobaToSubtract;
 
     void Update()
     {
         // Initialize this array only when prompted by this bool
         if (loadArray)
         {
+            var safeRange = bobaCount - Random.Range(lowerRandom, upperRandom);
+            badBoba1 = safeRange - Random.Range(lowerRandom, upperRandom);
+            badBoba2 = badBoba1 - Random.Range(lowerRandom, upperRandom);
+            badBoba3 = badBoba2 - Random.Range(lowerRandom, upperRandom);
 
             for (int i = 0; i < bobaCount; i++)
             {
                 // Load in a boba
                 var boba = Instantiate(Resources.Load("Prefabs/Boba") as GameObject);
+
+                // Randomly assign three bad boba
+                if (bobaCount - i == badBoba1 || bobaCount - i == badBoba2 || bobaCount - i == badBoba3)
+                {
+                    boba.GetComponent<MeshRenderer>().material = boba.GetComponent<MeshRenderer>().materials[1];
+                    boba.tag = "BadBoba";
+                }
+                else
+                {
+                    boba.GetComponent<MeshRenderer>().material = boba.GetComponent<MeshRenderer>().materials[0];
+                }
 
                 // Snag a temp pos and offset each incoming boba
                 var tempPos = bobaSpawnPoint.transform.position;
@@ -56,24 +78,20 @@ public class ArrayController : MonoBehaviour
             // Only call this function if no boba are currently popped out and the array is updated
             if(!poppedOut && arrayUpdated && bobasMoved)
             {
-                // Find the first boba and push it out
-                foreach (GameObject boba in bobaList)
-                {
-                    if (boba.GetComponent<BobaController>().order == 1)
-                    {
-                        bobaController = boba.GetComponent<BobaController>();
-                        boba.GetComponent<Rigidbody>().AddForce(0, thrust, 0, ForceMode.Impulse);
-                        poppedOut = true;
-                        lastBoba = boba;
-                        strawTop.GetComponent<StrawTopBuffer>().bobaAtTop = false;
-                        arrayUpdated = false;
-                        bobasMoved = false;
-                    }
-                }
+                incrementTurn = true;
+                bobaToSubtract = 1;
+                PopOutOneBoba();
             }
         }
-
-        // TODO: Add input control for hitting two bobas
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            if (!poppedOut && arrayUpdated && bobasMoved)
+            {
+                incrementTurn = true;
+                bobaToSubtract = 2;
+                PopOutTwoBoba();
+            }
+        }
 
         if (!bobasMoved)
         {
@@ -92,24 +110,97 @@ public class ArrayController : MonoBehaviour
     // This function updates the array once the boba has been popped out
     void UpdateArray()
     {
-        bobaList.Remove(lastBoba); // Remove the boba that was popped out
-        Destroy(lastBoba); // Destroy the boba that was popped out
+        if (bobaToSubtract == 1)
+        {
+            bobaList.Remove(lastBoba); // Remove the boba that was popped out
+            Destroy(lastBoba); // Destroy the boba that was popped out
+        } else if (bobaToSubtract == 2)
+        {
+            bobaList.Remove(lastBoba);
+            Destroy(lastBoba);
+            bobaList.Remove(secondToLastBoba); // Also remove the second to last boba
+            Destroy(secondToLastBoba);
+        }
 
         // Reorder all the remaining bobas in the list
         foreach (GameObject boba in bobaList)
         {
-            boba.GetComponent<BobaController>().order -= 1;
+            boba.GetComponent<BobaController>().order -= bobaToSubtract;
         }
 
         // Set back to true so players can input functions again
         arrayUpdated = true;
     }
 
+    // This function physically moves the boba out of the straw
     void MoveStrawBottom()
     {
-        while (!strawTop.GetComponent<StrawTopBuffer>().bobaAtTop)
+        // Check if there's not a boba at the top
+        if (!strawTop.GetComponent<StrawTopBuffer>().bobaAtTop)
         {
-            strawBottom.transform.Translate(Vector3.up * Time.deltaTime, Space.World);
+            // If it's the first push, add a little more force to this push
+            if (!firstPush)
+            {
+                strawBottom.transform.Translate(new Vector3(0, 1f, 0) * Time.deltaTime, Space.World);
+                timeElapsed += Time.deltaTime;
+            }
+            else
+            {
+                strawBottom.transform.Translate(new Vector3(0, 0.1f, 0) * Time.deltaTime, Space.World);
+            }
+
+            // Only add the extra force for a second
+            if (timeElapsed > 1f)
+            {
+                firstPush = true;
+            }
+
         }
+        else
+        {
+            bobasMoved = true;
+        }
+    }
+
+    void PopOutOneBoba()
+    {
+        // Find the first boba and push it out
+        foreach (GameObject boba in bobaList)
+        {
+            if (boba.GetComponent<BobaController>().order == 1)
+            {
+                boba.GetComponent<Rigidbody>().AddForce(0, thrust, 0, ForceMode.Impulse);
+                poppedOut = true;
+                lastBoba = boba;
+                strawTop.GetComponent<StrawTopBuffer>().bobaAtTop = false;
+                arrayUpdated = false;
+                bobasMoved = false;
+            }
+        }
+    }
+
+    void PopOutTwoBoba()
+    {
+        // Find the first boba and push it out
+        foreach (GameObject boba in bobaList)
+        {
+            if (boba.GetComponent<BobaController>().order == 1)
+            {
+                boba.tag = "Untagged";
+                boba.GetComponent<Rigidbody>().AddForce(0, thrust, 0, ForceMode.Impulse);
+                secondToLastBoba = boba;
+            }
+
+            if (boba.GetComponent<BobaController>().order == 2)
+            {
+                boba.tag = "Untagged";
+                boba.GetComponent<Rigidbody>().AddForce(0, thrust * 1.5f, 0, ForceMode.Impulse);
+                lastBoba = boba;
+            }
+        }
+        poppedOut = true;
+        strawTop.GetComponent<StrawTopBuffer>().bobaAtTop = false;
+        arrayUpdated = false;
+        bobasMoved = false;
     }
 }

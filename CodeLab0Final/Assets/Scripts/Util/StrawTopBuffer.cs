@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class StrawTopBuffer : MonoBehaviour
 {
-    public string bobaTag;
     public GameObject lastBoba;
+    public ArrayController arrayController;
     public bool bobaAtTop = true;
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(bobaTag))
+        if (other.CompareTag("Boba") || other.CompareTag("BadBoba"))
         {
             if (bobaAtTop == false)
             {

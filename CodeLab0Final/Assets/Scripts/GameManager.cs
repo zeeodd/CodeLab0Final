@@ -16,7 +16,11 @@ public class GameManager : MonoBehaviour
     public GameObject tinyStar;
     public GameObject bigStar;
 
+    public Material active;
+    public Material inactive;
+
     private Vector3 uprightCupRot = new Vector3(0f, 0f, 8.4f);
+    private int turnOrder = 1;
 
     // Animator for the camera
     Animator cameraAnimator;
@@ -93,28 +97,33 @@ public class GameManager : MonoBehaviour
             // Check the order of each player and assign them the correct position on the canvas
             foreach(Player player in playerList)
             {
+
                 if (player.Order == 1)
                 {
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMin = p1anchorMin;
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMax = p1anchorMax;
+                    player.Label.transform.parent.GetComponent<Image>().material = active;
                 }
 
                 if (player.Order == 2)
                 {
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMin = p2anchorMin;
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMax = p2anchorMax;
+                    player.Label.transform.parent.GetComponent<Image>().material = inactive;
                 }
 
                 if (player.Order == 3)
                 {
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMin = p3anchorMin;
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMax = p3anchorMax;
+                    player.Label.transform.parent.GetComponent<Image>().material = inactive;
                 }
 
                 if (player.Order == 4)
                 {
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMin = p4anchorMin;
                     player.Label.transform.parent.GetComponent<RectTransform>().anchorMax = p4anchorMax;
+                    player.Label.transform.parent.GetComponent<Image>().material = inactive;
                 }
             }
 
@@ -139,6 +148,36 @@ public class GameManager : MonoBehaviour
         {
             arrayController.loadArray = true;
             cameraController.setUpGame = false;
+        }
+
+        // If an input is registered, increment the turn order
+        // But reset the turn order if on the last player
+        if (arrayController.incrementTurn)
+        {
+            if (turnOrder == 4)
+            {
+                turnOrder = 1;
+            }
+            else
+            {
+                turnOrder++;
+            }
+
+            // Set the bool back to false
+            arrayController.incrementTurn = false;
+        }
+
+        // Check the order of each player and assign them the correct position on the canvas
+        foreach (Player player in playerList)
+        {
+            if (player.Order == turnOrder)
+            {
+                player.Label.transform.parent.GetComponent<Image>().material = active;
+            }
+            else
+            {
+                player.Label.transform.parent.GetComponent<Image>().material = inactive;
+            }
         }
     }
 
