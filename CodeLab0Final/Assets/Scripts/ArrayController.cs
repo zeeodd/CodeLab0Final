@@ -30,7 +30,7 @@ public class ArrayController : MonoBehaviour
     public int lowerRandom;
 
     // List of all bobas
-    List<GameObject> bobaList = new List<GameObject>();
+    public List<GameObject> bobaList = new List<GameObject>();
     private GameObject lastBoba;
     private GameObject secondToLastBoba;
     private int bobaToSubtract;
@@ -103,6 +103,7 @@ public class ArrayController : MonoBehaviour
             }
         }
 
+        // Now move the straw bottom upward
         if (!bobasMoved)
         {
             MoveStrawBottom();

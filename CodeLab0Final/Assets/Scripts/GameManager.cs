@@ -31,6 +31,10 @@ public class GameManager : MonoBehaviour
     private int upperPlayerRange = 3;
     private int lowerPlayerRange = 0;
 
+    private bool showBadBobaText = false;
+    private bool gameOver = false;
+    private int playerCount;
+
     // Animator for the camera
     Animator cameraAnimator;
 
@@ -167,27 +171,42 @@ public class GameManager : MonoBehaviour
         if (arrayController.incrementTurn)
         {
             IncrementTurn();
-            print("CURRENT TURN: " + turnOrder + " // " + "LAST TURN: " + lastTurn);
         }
 
         // Flip the text depending on whether the array is getting updated or not
         // To let the player know if they can input anything
         if (arrayController.gameIsUnderway)
         {
-            if (!arrayController.bobasMoved && !arrayController.sippedBadBoba)
+            if (!arrayController.bobasMoved && !arrayController.sippedBadBoba && !showBadBobaText)
             {
                 canvasController.loadingLabel.GetComponent<Text>().text = loading;
             }
-            else if (arrayController.bobasMoved && !arrayController.sippedBadBoba)
+            else if (arrayController.bobasMoved && !arrayController.sippedBadBoba && !showBadBobaText)
             {
                 canvasController.loadingLabel.GetComponent<Text>().text = ready;
             }
             else if (arrayController.sippedBadBoba) //  If a player has lost
             {
                 DeletePlayer();
-                canvasController.loadingLabel.GetComponent<Text>().text = playerLost;
-                Invoke("ResetBadBoba", 2f);
+                showBadBobaText = true;
+                Invoke("ResetBadBoba", 1.25f);
+                arrayController.sippedBadBoba = false;
             }
+
+            if (showBadBobaText)
+            {
+                canvasController.loadingLabel.GetComponent<Text>().text = playerLost;
+            }
+        }
+
+        if (playerCount == 1)
+        {
+            gameOver = true;
+        }
+
+        if (gameOver)
+        {
+            FinishGame();
         }
     }
 
@@ -208,6 +227,8 @@ public class GameManager : MonoBehaviour
         lowerPlayerRange = alivePlayers.Min();
         upperPlayerRange = alivePlayers.Max();
 
+        playerCount = alivePlayers.Count();
+
         // Increment the turn order
         turnOrder++;
 
@@ -226,9 +247,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-
-        print("UPPER: " + upperPlayerRange);
-        print("LOWER: " + lowerPlayerRange);
 
         // Check the order of each player and assign them the correct material
         foreach (Player player in playerList)
@@ -255,7 +273,7 @@ public class GameManager : MonoBehaviour
     // Just reset this bool so the bad boba text returns to normal
     void ResetBadBoba()
     {
-        arrayController.sippedBadBoba = false;
+        showBadBobaText = false;
     }
 
     // Deletes a player who drinks some bad boba
@@ -273,4 +291,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void FinishGame()
+    {
+        arrayController.strawBottom.transform.Translate(new Vector3(0, 1f, 0) * Time.deltaTime, Space.World);
+    }
 }
