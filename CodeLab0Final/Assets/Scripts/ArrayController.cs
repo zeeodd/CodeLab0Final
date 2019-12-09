@@ -11,6 +11,7 @@ public class ArrayController : MonoBehaviour
     public bool bobasMoved = true;
     public bool firstPush = false;
     public bool incrementTurn = false;
+    public bool gameIsUnderway = false;
     private float timeElapsed = 0f;
 
     // Gameobj for the boba's spawnpoint
@@ -38,18 +39,22 @@ public class ArrayController : MonoBehaviour
         // Initialize this array only when prompted by this bool
         if (loadArray)
         {
-            var safeRange = bobaCount - Random.Range(lowerRandom, upperRandom);
-            badBoba1 = safeRange - Random.Range(lowerRandom, upperRandom);
-            badBoba2 = badBoba1 - Random.Range(lowerRandom, upperRandom);
-            badBoba3 = badBoba2 - Random.Range(lowerRandom, upperRandom);
+            // Randomly assign three bad boba...
+            badBoba1 = bobaCount - Random.Range(lowerRandom, upperRandom); // Offset the first one from the back (since we don't want a bad one upfront)
+            badBoba2 = badBoba1 - Random.Range(lowerRandom, upperRandom); // Just pick another random one for the second
+            // If the last boba were to be too close to the first round of play so that
+            // it's possible for player 3 or 4 to lose automatically, pick the safe zone
+            var lastNum = Random.Range(lowerRandom, upperRandom);
+            var safeZone = Random.Range(lowerRandom, upperRandom);
+            badBoba3 = (badBoba2 - lastNum < safeZone) ? safeZone : badBoba2 - lastNum;
 
             for (int i = 0; i < bobaCount; i++)
             {
                 // Load in a boba
                 var boba = Instantiate(Resources.Load("Prefabs/Boba") as GameObject);
 
-                // Randomly assign three bad boba
-                if (bobaCount - i == badBoba1 || bobaCount - i == badBoba2 || bobaCount - i == badBoba3)
+                // Change the bad boba's materials
+                if (i == badBoba1 || bobaCount - i == badBoba2 || bobaCount - i == badBoba3)
                 {
                     boba.GetComponent<MeshRenderer>().material = boba.GetComponent<MeshRenderer>().materials[1];
                     boba.tag = "BadBoba";
@@ -71,6 +76,7 @@ public class ArrayController : MonoBehaviour
             }
 
             loadArray = false;
+            gameIsUnderway = true;
         }
 
         if(Input.GetKeyDown(KeyCode.Alpha1))

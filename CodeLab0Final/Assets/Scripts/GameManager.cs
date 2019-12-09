@@ -16,8 +16,12 @@ public class GameManager : MonoBehaviour
     public GameObject tinyStar;
     public GameObject bigStar;
 
+    // Materials for the bobas
     public Material active;
     public Material inactive;
+
+    private string loading = "Don't Sip Yet...";
+    private string ready = "Okay, Sip Away!";
 
     private Vector3 uprightCupRot = new Vector3(0f, 0f, 8.4f);
     private int turnOrder = 1;
@@ -144,10 +148,13 @@ public class GameManager : MonoBehaviour
             canvasController.savePlayers = false;
         }
 
+        // Add the bobas when the camera has
         if (cameraController.setUpGame)
         {
             arrayController.loadArray = true;
             cameraController.setUpGame = false;
+            canvasController.loadingLabel.gameObject.SetActive(true);
+            canvasController.loadingLabel.GetComponent<Text>().text = ready;
         }
 
         // If an input is registered, increment the turn order
@@ -177,6 +184,18 @@ public class GameManager : MonoBehaviour
             else
             {
                 player.Label.transform.parent.GetComponent<Image>().material = inactive;
+            }
+        }
+
+        if (arrayController.gameIsUnderway)
+        {
+            if (!arrayController.bobasMoved)
+            {
+                canvasController.loadingLabel.GetComponent<Text>().text = loading;
+            }
+            else
+            {
+                canvasController.loadingLabel.GetComponent<Text>().text = ready;
             }
         }
     }
