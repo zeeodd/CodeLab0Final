@@ -167,9 +167,8 @@ public class GameManager : MonoBehaviour
         if (arrayController.incrementTurn)
         {
             IncrementTurn();
+            print("CURRENT TURN: " + turnOrder + " // " + "LAST TURN: " + lastTurn);
         }
-
-        print("CURRENT TURN: " + turnOrder + " // " + "LAST TURN: " + lastTurn);
 
         // Flip the text depending on whether the array is getting updated or not
         // To let the player know if they can input anything
@@ -200,19 +199,28 @@ public class GameManager : MonoBehaviour
         // Increment the turn order
         turnOrder++;
 
+        // TODO: Handle case where player 2 dies and it wraps back around
+
+        // Re-assign the boundaries of movement within turn order
+        var alivePlayers = new List<int>();
+        foreach (Player player in playerList)
+        {
+            if (player.Alive)
+            {
+                alivePlayers.Add(player.Order);
+            }
+        }
+        lowerPlayerRange = alivePlayers.Min();
+        upperPlayerRange = alivePlayers.Max();
+
+        print("UPPER: " + upperPlayerRange);
+        print("LOWER: " + lowerPlayerRange);
+
         // If we hit the upper boundary, reset
         if (turnOrder > upperPlayerRange || turnOrder < lowerPlayerRange)
         {
             turnOrder = lowerPlayerRange;
         }
-
-        // If the current player is dead, move to the next player
-        if (!playerList[turnOrder - 1].Alive)
-        {
-            turnOrder++;
-        }
-
-        var alivePlayers = new List<int>();
 
         // Check the order of each player and assign them the correct material
         foreach (Player player in playerList)
@@ -231,13 +239,6 @@ public class GameManager : MonoBehaviour
                 alivePlayers.Add(player.Order);
             }
         }
-
-        // Re-assign the boundaries of movement within turn order
-        lowerPlayerRange = alivePlayers.Min();
-        upperPlayerRange = alivePlayers.Max();
-
-        print(lowerPlayerRange);
-        print(upperPlayerRange);
 
         // End the bool
         arrayController.incrementTurn = false;
