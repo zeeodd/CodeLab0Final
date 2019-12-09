@@ -12,6 +12,7 @@ public class ArrayController : MonoBehaviour
     public bool firstPush = false;
     public bool incrementTurn = false;
     public bool gameIsUnderway = false;
+    public bool sippedBadBoba = false;
     private float timeElapsed = 0f;
 
     // Gameobj for the boba's spawnpoint
@@ -79,23 +80,26 @@ public class ArrayController : MonoBehaviour
             gameIsUnderway = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if (gameIsUnderway)
         {
-            // Only call this function if no boba are currently popped out and the array is updated
-            if(!poppedOut && arrayUpdated && bobasMoved)
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                incrementTurn = true;
-                bobaToSubtract = 1;
-                PopOutOneBoba();
+                // Only call this function if no boba are currently popped out and the array is updated
+                if (!poppedOut && arrayUpdated && bobasMoved)
+                {
+                    incrementTurn = true;
+                    bobaToSubtract = 1;
+                    PopOutOneBoba();
+                }
             }
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            if (!poppedOut && arrayUpdated && bobasMoved)
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                incrementTurn = true;
-                bobaToSubtract = 2;
-                PopOutTwoBoba();
+                if (!poppedOut && arrayUpdated && bobasMoved)
+                {
+                    incrementTurn = true;
+                    bobaToSubtract = 2;
+                    PopOutTwoBoba();
+                }
             }
         }
 
@@ -118,10 +122,25 @@ public class ArrayController : MonoBehaviour
     {
         if (bobaToSubtract == 1)
         {
+            // Check if player drank a bad boba
+            if (lastBoba.GetComponent<MeshRenderer>().material == lastBoba.GetComponent<MeshRenderer>().materials[1])
+            {
+                sippedBadBoba = true;
+            }
             bobaList.Remove(lastBoba); // Remove the boba that was popped out
             Destroy(lastBoba); // Destroy the boba that was popped out
+
         } else if (bobaToSubtract == 2)
         {
+
+            if (lastBoba.GetComponent<MeshRenderer>().material == lastBoba.GetComponent<MeshRenderer>().materials[1])
+            {
+                sippedBadBoba = true;
+            } 
+            else if (secondToLastBoba.GetComponent<MeshRenderer>().material == secondToLastBoba.GetComponent<MeshRenderer>().materials[1])
+            {
+                sippedBadBoba = true;
+            }
             bobaList.Remove(lastBoba);
             Destroy(lastBoba);
             bobaList.Remove(secondToLastBoba); // Also remove the second to last boba
@@ -209,4 +228,5 @@ public class ArrayController : MonoBehaviour
         arrayUpdated = false;
         bobasMoved = false;
     }
+
 }
