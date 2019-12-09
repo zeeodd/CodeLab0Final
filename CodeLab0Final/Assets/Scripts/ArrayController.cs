@@ -55,7 +55,7 @@ public class ArrayController : MonoBehaviour
                 var boba = Instantiate(Resources.Load("Prefabs/Boba") as GameObject);
 
                 // Change the bad boba's materials
-                if (i == badBoba1 || bobaCount - i == badBoba2 || bobaCount - i == badBoba3)
+                if (bobaCount - i == badBoba1 || bobaCount - i == badBoba2 || bobaCount - i == badBoba3)
                 {
                     boba.GetComponent<MeshRenderer>().material = boba.GetComponent<MeshRenderer>().materials[1];
                     boba.tag = "BadBoba";

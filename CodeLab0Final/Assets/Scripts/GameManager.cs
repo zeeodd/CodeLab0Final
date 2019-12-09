@@ -196,11 +196,6 @@ public class GameManager : MonoBehaviour
         // Save the last turn
         lastTurn = turnOrder;
 
-        // Increment the turn order
-        turnOrder++;
-
-        // TODO: Handle case where player 2 dies and it wraps back around
-
         // Re-assign the boundaries of movement within turn order
         var alivePlayers = new List<int>();
         foreach (Player player in playerList)
@@ -213,14 +208,27 @@ public class GameManager : MonoBehaviour
         lowerPlayerRange = alivePlayers.Min();
         upperPlayerRange = alivePlayers.Max();
 
+        // Increment the turn order
+        turnOrder++;
+
+        // Check if the current player is alive
+        if (!alivePlayers.Contains(turnOrder)) // Dead
+        {
+            // Keep incrementing until we find an alive player
+            while(!alivePlayers.Contains(turnOrder))
+            {
+                turnOrder++;
+
+                // If we hit the upper boundary, reset
+                if (turnOrder > upperPlayerRange || turnOrder < lowerPlayerRange)
+                {
+                    turnOrder = lowerPlayerRange;
+                }
+            }
+        }
+
         print("UPPER: " + upperPlayerRange);
         print("LOWER: " + lowerPlayerRange);
-
-        // If we hit the upper boundary, reset
-        if (turnOrder > upperPlayerRange || turnOrder < lowerPlayerRange)
-        {
-            turnOrder = lowerPlayerRange;
-        }
 
         // Check the order of each player and assign them the correct material
         foreach (Player player in playerList)
