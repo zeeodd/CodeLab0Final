@@ -167,7 +167,7 @@ public class ArrayController : MonoBehaviour
             // If it's the first push, add a little more force to this push
             if (!firstPush)
             {
-                strawBottom.transform.Translate(new Vector3(0, 1f, 0) * Time.deltaTime, Space.World);
+                strawBottom.transform.Translate(new Vector3(0, 1.2f, 0) * Time.deltaTime, Space.World);
                 timeElapsed += Time.deltaTime;
             }
             else

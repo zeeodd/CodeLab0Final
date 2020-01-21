@@ -18,6 +18,8 @@ public class CanvasController : MonoBehaviour
     public GameObject P4Order;
     public GameObject startBtn;
     public GameObject loadingLabel;
+    public GameObject key1;
+    public GameObject key2;
 
     // Used for triggering the actual ordering of players after a short anim
     public bool readyForOrdering = false;
@@ -50,12 +52,16 @@ public class CanvasController : MonoBehaviour
         P4Order = transform.GetChild(9).gameObject;
         startBtn = transform.GetChild(10).gameObject;
         loadingLabel = transform.GetChild(11).gameObject;
+        key1 = transform.GetChild(12).gameObject;
+        key2 = transform.GetChild(13).gameObject;
 
         // Set the order/start button inactive at the start
         // Only want players to start ordering when all names have been entered
         orderBtn.SetActive(false);
         startBtn.SetActive(false);
         loadingLabel.SetActive(false);
+        key1.SetActive(false);
+        key2.SetActive(false);
 
         // Initialize the order list with the strings to be assigned
         orderValues.Add("1");

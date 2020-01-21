@@ -14,8 +14,7 @@ public class GameManager : MonoBehaviour
 
     // Gameobjects we need to keep track of
     public GameObject cup;
-    public GameObject tinyStar;
-    public GameObject bigStar;
+    public ParticleSystem stars;
 
     // Materials for the bobas
     public Material active;
@@ -141,10 +140,7 @@ public class GameManager : MonoBehaviour
             }
 
             // Stop other animations
-            tinyStar.GetComponent<InfiniteRotate>().shouldBeSpinning = false;
-            bigStar.GetComponent<InfiniteRotate>().shouldBeSpinning = false;
-            tinyStar.gameObject.SetActive(false);
-            bigStar.gameObject.SetActive(false);
+            stars.gameObject.SetActive(false);
             cup.GetComponent<InfiniteRotate>().shouldBeSpinning = false;
             cup.transform.eulerAngles = uprightCupRot;
 
@@ -164,6 +160,8 @@ public class GameManager : MonoBehaviour
             arrayController.loadArray = true;
             cameraController.setUpGame = false;
             canvasController.loadingLabel.gameObject.SetActive(true);
+            canvasController.key1.SetActive(true);
+            canvasController.key2.SetActive(true);
             canvasController.loadingLabel.GetComponent<Text>().text = ready;
         }
 
@@ -180,10 +178,14 @@ public class GameManager : MonoBehaviour
             if (!arrayController.bobasMoved && !arrayController.sippedBadBoba && !showBadBobaText)
             {
                 canvasController.loadingLabel.GetComponent<Text>().text = loading;
+                canvasController.key1.SetActive(false);
+                canvasController.key2.SetActive(false);
             }
             else if (arrayController.bobasMoved && !arrayController.sippedBadBoba && !showBadBobaText)
             {
                 canvasController.loadingLabel.GetComponent<Text>().text = ready;
+                canvasController.key1.SetActive(true);
+                canvasController.key2.SetActive(true);
             }
             else if (arrayController.sippedBadBoba) //  If a player has lost
             {
